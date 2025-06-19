@@ -1,3 +1,4 @@
+
 'use client';
 
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
@@ -11,8 +12,8 @@ interface CourierMapProps {
   selectedCourierId?: string | null;
 }
 
-// IMPORTANT: Replace with your actual Google Maps API Key
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "YOUR_GOOGLE_MAPS_API_KEY_HERE"; 
+// Use an empty string if the API key is not provided, for development purposes
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""; 
 // Default to Los Angeles if no couriers
 const DEFAULT_CENTER = { lat: 34.0522, lng: -118.2437 };
 
@@ -38,7 +39,10 @@ export function CourierMap({ couriers, onCourierSelect, selectedCourierId }: Cou
     setMapCenter(courier.currentLocation); 
   };
 
-  if (GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE") {
+  // This condition might need adjustment if an empty string for API key is desired for dev mode.
+  // If GOOGLE_MAPS_API_KEY can be "" for dev, this specific message block might not be shown.
+  // The user's input implies that an empty string is fine and @vis.gl/react-google-maps will handle it.
+  if (GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE_PLACEHOLDER_NO_LONGER_USED") { // This condition is now unlikely to be met
     return (
       <div className="h-full w-full flex items-center justify-center bg-muted rounded-lg p-4 text-center">
         <div className="space-y-2">
@@ -46,7 +50,7 @@ export function CourierMap({ couriers, onCourierSelect, selectedCourierId }: Cou
           <p className="font-semibold text-lg">Map Disabled</p>
           <p className="text-sm text-muted-foreground">
             Please provide a Google Maps API Key in your environment variables (NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
-            or directly in the `src/app/admin/components/courier-map.tsx` file to enable the map.
+            to enable the map fully. For development, it may work with limitations.
           </p>
         </div>
       </div>
