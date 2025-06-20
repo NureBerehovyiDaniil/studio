@@ -1,14 +1,13 @@
-
-# Node.js with Next.js
-# Build a Node.js project that uses Next.js.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - master
 
 pool:
   name: 'Default'
+
+variables:
+  imageName: 'verydeli'
+  acrLoginServer: 'verydeli.azurecr.io'
+  azureSubscription: 'verydeli'
 
 steps:
 - task: NodeTool@0
@@ -24,15 +23,22 @@ steps:
     npm run build
   displayName: 'npm run build'
   env:
-    # Define your build-time environment variables here.
-    # These are mapped from secret variables configured in your Azure DevOps pipeline settings.
-    # NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: $(NEXT_PUBLIC_GOOGLE_MAPS_API_KEY_SECRET)
-    GEMINI_API_KEY: $(GEMINI_API_KEY_SECRET) # Map the secret variable to GEMINI_API_KEY
-    CI: true # Often used by build tools to optimize output
+    GEMINI_API_KEY: $(GEMINI_API_KEY_SECRET)
+    CI: true
+
+- task: Docker@2
+  displayName: 'Build and push Docker image'
+  inputs:
+    command: buildAndPush
+    repository: '$(acrLoginServer)/$(imageName)'
+    dockerfile: 'Dockerfile'
+    containerRegistry: '$(azureSubscription)'
+    tags: |
+      $(Build.BuildId)
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)/build' # Corresponds to distDir in next.config.ts
+    SourceFolder: '$(System.DefaultWorkingDirectory)/build'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/app'
   displayName: 'Copy build output to staging'
@@ -43,4 +49,3 @@ steps:
     ArtifactName: 'nextjs-app'
     publishLocation: 'Container'
   displayName: 'Publish artifact: nextjs-app'
-
