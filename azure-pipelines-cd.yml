@@ -1,33 +1,40 @@
-trigger: none  # Run manually or based on artifact
+trigger: none  # Запускается вручную или по триггеру из resources
 
 pr: none
 
+resources:
+  pipelines:
+  - pipeline: ciPipeline
+    source: 'Verydeli-azure-piplines-ci'  # Имя вашего CI pipeline
+    trigger:
+      branches:
+        include:
+          - master
+
 pool:
-  name: 'Default'  # Use your self-hosted agent pool, same as CI
+  name: 'Default'
 
 variables:
   artifactName: 'nextjs-app'
-  output_location: 'app'  # Matches the CI artifact folder name
+  output_location: 'app'
 
 stages:
 - stage: Deploy
-  displayName: 'Deploy to Azure Static Web App'
   jobs:
   - job: DeployStaticApp
-    displayName: 'Deploy job'
     steps:
-
-    # Download build artifact from CI
     - task: DownloadPipelineArtifact@2
       inputs:
+        buildType: 'specific'
+        pipeline: 'Verydeli-azure-piplines-ci'
+        buildVersionToDownload: 'latest'
         artifact: $(artifactName)
         path: $(System.DefaultWorkingDirectory)/$(output_location)
       displayName: 'Download build artifact'
 
-    # Deploy to Azure Static Web App using token
     - task: AzureStaticWebApp@0
       inputs:
-        app_location: '.'
-        output_location: '$(output_location)'
+        app_location: '.'                      # Папка с исходниками приложения, обычно корень
+        output_location: '$(output_location)' # Путь к собранному приложению
         azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)
       displayName: 'Deploy to Azure Static Web App'
