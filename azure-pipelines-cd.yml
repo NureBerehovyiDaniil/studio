@@ -26,6 +26,7 @@ stages:
     - task: DownloadPipelineArtifact@2
       inputs:
         buildType: 'specific'
+        project: 'Lab 5 CI_CD'
         pipeline: 'Verydeli-azure-piplines-ci'
         buildVersionToDownload: 'latest'
         artifact: $(artifactName)
