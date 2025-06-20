@@ -16,7 +16,7 @@ pool:
 
 variables:
   artifactName: 'nextjs-app'
-  output_location: 'app'
+  build_output_location: 'app'
 
 stages:
 - stage: Deploy
@@ -36,6 +36,6 @@ stages:
     - task: AzureStaticWebApp@0
       inputs:
         app_location: '.'                      # Папка с исходниками приложения, обычно корень
-        output_location: '$(output_location)' # Путь к собранному приложению
+        output_location: '$(build_output_location)' # Путь к собранному приложению
         azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)
       displayName: 'Deploy to Azure Static Web App'
